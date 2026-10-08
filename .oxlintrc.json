@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc", "unicorn"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "react/react-in-jsx-scope": "off",
+    // Simulations deliberately mutate three.js objects and frame state inside
+    // useFrame callbacks and effects (never during render): the standard React
+    // Three Fiber pattern for 60 fps work without React renders. This rule
+    // models the React Compiler, which this project does not use.
+    "react/immutability": "off",
+    "no-unused-vars": "off",
+    "unicorn/no-new-array": "off",
+    "unicorn/prefer-add-event-listener": "off"
+  },
+  "ignorePatterns": ["dist", "node_modules", "test-results", "playwright-report"]
+}

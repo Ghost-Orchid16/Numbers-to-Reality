@@ -1,0 +1,259 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens.
+ *
+ * Neutrals are an instrument-panel base. Every saturated colour is bound to a
+ * physical quantity and means the same thing everywhere on the site: 3D
+ * vectors, equation variables, sliders, telemetry and charts. The same values
+ * live in src/design/quantities.ts for three.js (a test keeps them in sync).
+ */
+@theme {
+  --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-math: 'STIX Two Text', 'Cambria Math', 'Times New Roman', serif;
+
+  --color-void: #03050a;
+  --color-ink: #0a0f18;
+  --color-panel: #0d131e;
+  --color-fg: #e6ecf5;
+  --color-muted: #93a0b4;
+  --color-dim: #768398;
+  --color-line: rgb(160 180 210 / 0.14);
+  --color-line-strong: rgb(160 180 210 / 0.28);
+  --color-focus: #8fcbfe;
+
+  /*
+   * Quantity colours. Text tones (--color-q-*) are for symbols and labels and
+   * clear 10:1 on the page. Mark tones (--color-q-*-mark) are for arrows,
+   * lines and swatches: validated as a set for colour-vision deficiency
+   * (all pairs, OKLab ΔE ≥ 11.9) and normal vision (ΔE ≥ 15.9).
+   */
+  --color-q-force: #fab36d;
+  --color-q-force-mark: #d37e01;
+  --color-q-gravity: #c3bafe;
+  --color-q-gravity-mark: #735acc;
+  --color-q-drag: #ffaba3;
+  --color-q-drag-mark: #c13c3b;
+  --color-q-velocity: #8fcbfe;
+  --color-q-velocity-mark: #119cf3;
+  --color-q-acceleration: #5addc7;
+  --color-q-acceleration-mark: #08a28f;
+  --color-q-mass: #f4e7cf;
+  --color-q-mass-mark: #f4e7cf;
+  --color-q-position: #cfe0f7;
+  --color-q-position-mark: #cfe0f7;
+  --color-q-neutral: #c9d3e1;
+  --color-q-neutral-mark: #c9d3e1;
+
+  /* Status: always shown with an icon and a label, never colour alone. */
+  --color-ok: #7dd897;
+  --color-warn: #f2c14e;
+  --color-fail: #ff7b7b;
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-void);
+    color: var(--color-fg);
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100svh;
+    background: var(--color-void);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.55;
+    font-variation-settings: 'wdth' 100;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: rgb(155 184 232 / 0.35);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer utilities {
+  /* Horizontal page padding; on desktop it clears the chapter rail. */
+  .page-x {
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 40rem) {
+    .page-x {
+      padding-inline: 2.5rem;
+    }
+  }
+  @media (min-width: 64rem) {
+    .page-x {
+      padding-left: 10rem;
+      padding-right: 4rem;
+    }
+  }
+
+  /* Live numbers must not jitter as digits change. */
+  .tabular {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  /* Archivo's expanded cut, used for display type. */
+  .wide {
+    font-stretch: 125%;
+    font-variation-settings: 'wdth' 125;
+  }
+
+  .semi-wide {
+    font-stretch: 112%;
+    font-variation-settings: 'wdth' 112;
+  }
+
+  .condensed {
+    font-stretch: 88%;
+    font-variation-settings: 'wdth' 88;
+  }
+
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * Range input bound to a quantity. Set --q (the quantity colour) and
+ * --fill (0–100%) inline; the filled part of the track takes the colour.
+ */
+@layer components {
+  .range {
+    --q: var(--color-q-neutral);
+    --fill: 50%;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 1.5rem;
+    background: transparent;
+    cursor: pointer;
+    touch-action: pan-y;
+  }
+
+  .range::-webkit-slider-runnable-track {
+    height: 2px;
+    border-radius: 1px;
+    background: linear-gradient(to right, var(--q) 0 var(--fill), var(--color-line-strong) var(--fill) 100%);
+  }
+
+  .range::-moz-range-track {
+    height: 2px;
+    border-radius: 1px;
+    background: var(--color-line-strong);
+  }
+
+  .range::-moz-range-progress {
+    height: 2px;
+    border-radius: 1px;
+    background: var(--q);
+  }
+
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background: var(--color-void);
+    border: 2px solid var(--q);
+    transition: transform 120ms var(--ease-out-quart);
+  }
+
+  .range::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-void);
+    border: 2px solid var(--q);
+  }
+
+  .range:active::-webkit-slider-thumb {
+    transform: scale(1.25);
+  }
+
+  .range:focus-visible {
+    outline: none;
+  }
+
+  .range:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px var(--color-void), 0 0 0 5px var(--color-focus);
+  }
+
+  .range:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 3px var(--color-void), 0 0 0 5px var(--color-focus);
+  }
+}
+
+/* Scroll cue: a short highlight travelling down a hairline. */
+@layer components {
+  .scroll-cue::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -40%;
+    width: 1px;
+    height: 40%;
+    background: var(--color-fg);
+    animation: scroll-cue 2.4s var(--ease-out-quart) infinite;
+  }
+
+  @keyframes scroll-cue {
+    0% {
+      top: -40%;
+    }
+    70%,
+    100% {
+      top: 100%;
+    }
+  }
+}
