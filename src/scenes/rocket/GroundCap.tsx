@@ -89,7 +89,10 @@ const fragment = /* glsl */ `
     vec2 g = p / spacing;
     vec2 w = fwidth(g);
     vec2 d = abs(fract(g - 0.5) - 0.5) / max(w, vec2(1e-5));
-    return 1.0 - smoothstep(0.5, 1.5, min(d.x, d.y));
+    float line = 1.0 - smoothstep(0.5, 1.5, min(d.x, d.y));
+    // Fade out where lines crowd closer than a few pixels apart; otherwise
+    // grazing views alias into a bright band.
+    return line * (1.0 - smoothstep(0.08, 0.3, max(w.x, w.y)));
   }
 
   void main() {

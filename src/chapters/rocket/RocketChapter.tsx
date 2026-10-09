@@ -38,7 +38,7 @@ export default function RocketChapter() {
     // Keep the subject clear of the narrative: right of the text column on
     // desktop, above the text panel on small screens.
     c.framingX = isDesktop ? 0.08 : 0
-    c.framingY = isDesktop ? 0 : 0.17
+    c.framingY = isDesktop ? 0 : 0.18
   }, [labView, reducedMotion, isDesktop])
 
   const sectionRef = useRef<HTMLElement>(null)

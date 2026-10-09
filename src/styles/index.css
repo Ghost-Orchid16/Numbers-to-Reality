@@ -234,6 +234,13 @@
   }
 }
 
+/* Narrative prose that waits behind "Read more" on small screens. */
+@media (max-width: 63.99rem) {
+  .narrative-body[data-expanded='false'] .detail {
+    display: none;
+  }
+}
+
 /* Scroll cue: a short highlight travelling down a hairline. */
 @layer components {
   .scroll-cue::after {

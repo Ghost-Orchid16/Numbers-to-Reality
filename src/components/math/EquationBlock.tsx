@@ -22,7 +22,7 @@ export function EquationBlock({ label, children, substitution, caption, classNam
       {label && <figcaption className="mb-1.5 text-xs text-muted">{label}</figcaption>}
       <div className="text-[1.3rem] text-fg sm:text-[1.4rem]">{children}</div>
       {substitution && <div className="mt-2 text-[1rem] text-fg/90 sm:text-[1.05rem]">{substitution}</div>}
-      {caption && <p className="mt-2 max-w-[46ch] text-[0.8rem] leading-snug text-muted">{caption}</p>}
+      {caption && <p className="detail mt-2 max-w-[46ch] text-[0.8rem] leading-snug text-muted">{caption}</p>}
     </figure>
   )
 }

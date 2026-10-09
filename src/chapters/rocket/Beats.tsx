@@ -35,7 +35,7 @@ function TryIt({ children }: { children: ReactNode }) {
 }
 
 function Watch({ children }: { children: ReactNode }) {
-  return <p className="text-sm leading-snug text-muted">{children}</p>
+  return <p className="detail text-sm leading-snug text-muted">{children}</p>
 }
 
 /** Thrust-to-weight on the pad, shown next to the thrust slider. */
@@ -62,7 +62,7 @@ export function CountdownBeat({ sim, active }: BeatProps) {
       title="Nothing moves until a force wins."
       realWorld="Real rockets also stay clamped to the pad for a few seconds after ignition, until computers confirm every engine is healthy."
     >
-      <p>Fuelled and waiting, the rocket’s weight pulls it down. The pad pushes back with exactly the same force, so the net force — and the acceleration — is zero.</p>
+      <p className="detail">Fuelled and waiting, the rocket’s weight pulls it down. The pad pushes back with exactly the same force, so the net force — and the acceleration — is zero.</p>
       <EquationBlock
         label="Forces on the pad"
         substitution={
@@ -112,7 +112,7 @@ export function LiftoffBeat({ sim, active }: BeatProps) {
       title="Thrust has to beat weight."
       realWorld="Liftoff thrust-to-weight ratios of real launchers sit around 1.2–1.5. More thrust wastes less time fighting gravity, but costs heavier engines and harsher loads."
     >
-      <p>The engines push up with thrust T. Only what is left after cancelling the weight accelerates the rocket — Newton’s second law.</p>
+      <p className="detail">The engines push up with thrust T. Only what is left after cancelling the weight accelerates the rocket — Newton’s second law.</p>
       <EquationBlock
         label="Newton’s second law, along the flight path"
         substitution={
@@ -187,7 +187,7 @@ export function DragBeat({ sim, active }: BeatProps) {
       title="The air pushes back hardest at Max-Q."
       realWorld="A real drag coefficient changes sharply near the speed of sound, and rockets throttle down through Max-Q to keep the structure within its limits."
     >
-      <p>
+      <p className="detail">
         Drag grows with the square of speed, but the air thins as the rocket climbs. Their product, the dynamic pressure <i className="font-math">q</i>, peaks about a minute in:
         Max-Q.
       </p>
@@ -255,7 +255,7 @@ export function TurnBeat({ sim, active }: BeatProps) {
       title="Orbit is about going sideways, fast."
       realWorld="Real guidance (Powered Explicit Guidance on the Space Shuttle, for example) also targets the orbital plane and timing, re-solving its steering about once a second."
     >
-      <p>
+      <p className="detail">
         After a small tilt, gravity bends the path over. Above the thick air the flight computer takes over: every 0.2 s it solves for the steering that ends the burn with zero
         vertical speed at {formatNumber(VEHICLE.targetAltitude / 1000, 0)} km.
       </p>
@@ -360,7 +360,7 @@ export function MassBeat({ sim, active }: BeatProps) {
       title="Same engines, less mass, more acceleration."
       realWorld="Real orbital rockets drop empty stages so they stop carrying dead weight. A single-stage rocket like this one is near the edge of what can be built."
     >
-      <p>
+      <p className="detail">
         The engines throw away propellant every second, so the same thrust pushes less and less mass. Acceleration climbs until the computer throttles back to hold 4 g.
       </p>
       <EquationBlock
@@ -434,7 +434,7 @@ export function OrbitBeat({ sim, active }: BeatProps) {
       title="Engines off. Still falling — but missing the planet."
       realWorld="Real low orbits slowly decay in the thin upper atmosphere, and the Earth’s bulge and the Moon’s pull keep reshaping them. Satellites carry thrusters to correct."
     >
-      <p>Only gravity acts now. The rocket moves sideways so fast that the ground curves away as quickly as it falls. That is an orbit — Newton’s cannonball, made real.</p>
+      <p className="detail">Only gravity acts now. The rocket moves sideways so fast that the ground curves away as quickly as it falls. That is an orbit — Newton’s cannonball, made real.</p>
       <EquationBlock
         label="Specific orbital energy"
         substitution={

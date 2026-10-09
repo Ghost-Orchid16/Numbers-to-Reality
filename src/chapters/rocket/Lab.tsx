@@ -34,7 +34,7 @@ export function OutcomeStatus({ sim }: { sim: RocketSimulation }) {
   const diagnosis = useStore(sim.flightInfo, (f) => f.diagnosis)
   const style = VERDICT_STYLE[diagnosis.verdict]
   return (
-    <div role="status" aria-live="polite" className="flex gap-3 rounded-md border border-line bg-white/[0.025] p-3">
+    <div role="status" aria-live="polite" data-testid="flight-outcome" className="flex gap-3 rounded-md border border-line bg-white/[0.025] p-3">
       <svg aria-hidden viewBox="0 0 16 16" className={`mt-0.5 size-4 shrink-0 ${style.color}`}>
         {style.icon}
       </svg>

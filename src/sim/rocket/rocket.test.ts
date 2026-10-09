@@ -64,6 +64,16 @@ describe('orbital elements', () => {
     expect(el.apoapsis).toBeGreaterThan(r)
   })
 
+  it('gives the ballistic apex for purely vertical motion (degenerate ellipse)', () => {
+    const r = R + 41
+    const v = 21
+    const el = orbitalElements(0, r, 0, v, mu)
+    const g = mu / (r * r)
+    // h_max ≈ h + v²/2g for a short hop.
+    expect(el.apoapsis - R).toBeCloseTo(41 + (v * v) / (2 * g), 1)
+    expect(el.periapsis).toBeLessThan(R)
+  })
+
   it('classifies escape at escape speed or above', () => {
     const r = R + 300_000
     const el = orbitalElements(0, r, escapeSpeed(mu, r) * 1.05, 0, mu)

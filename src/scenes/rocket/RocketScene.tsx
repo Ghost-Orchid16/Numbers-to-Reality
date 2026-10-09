@@ -31,7 +31,10 @@ export interface RocketSceneControls {
   progress: number
   /** Camera shot used while the lab beat is active. */
   labShot: CameraShot
-  /** Where to frame the subject, as a fraction of the viewport (0 = centred). */
+  /**
+   * Where to frame the subject, as a fraction of the viewport (0 = centred):
+   * positive framingX moves it right, positive framingY moves it up.
+   */
   framingX: number
   framingY: number
   reducedMotion: boolean
@@ -129,7 +132,8 @@ function Driver({ sim, controls, sceneState }: { sim: RocketSimulation; controls
     // ── Camera shot for this beat ───────────────────────────────────────
     const goalShot = beat.id === 'lab' ? c.labShot : beat.shot
     const prevShot = index > 0 && beat.id !== 'lab' ? BEATS[index - 1].shot : goalShot
-    const k = smoothstep(0, 0.45, local)
+    // With reduced motion the camera cuts between shots instead of flying.
+    const k = c.reducedMotion ? 1 : smoothstep(0, 0.45, local)
     blendParams(toParams(prevShot), toParams(goalShot), k, m.goal)
     const prevEmphasis = index > 0 ? BEATS[index - 1].emphasis : beat.emphasis
     blendEmphasis(prevEmphasis, beat.emphasis, smoothstep(0, 0.3, local), m.emphasisGoal)
@@ -184,7 +188,8 @@ function Driver({ sim, controls, sceneState }: { sim: RocketSimulation; controls
     if (fx !== m.framing[0] || fy !== m.framing[1] || size.width !== m.framing[2] || size.height !== m.framing[3]) {
       m.framing = [fx, fy, size.width, size.height]
       if (fx === 0 && fy === 0) camera.clearViewOffset()
-      else camera.setViewOffset(size.width, size.height, -fx * size.width, -fy * size.height, size.width, size.height)
+      // The view-offset window's y axis points down: shifting the window down moves the subject up.
+      else camera.setViewOffset(size.width, size.height, -fx * size.width, fy * size.height, size.width, size.height)
     }
     camera.updateProjectionMatrix()
     m.initialised = true
@@ -275,8 +280,12 @@ export function RocketScene({ sim, controls, labels }: RocketSceneProps) {
   const rotation = useMemo(() => launchFrameRotation(LAUNCH_SITE.latitude, LAUNCH_SITE.longitude), [])
   const quality = useMemo(() => detectQuality(), [])
   useEffect(() => {
-    // Development aid: inspect the live simulation and frame state from the console.
-    if (import.meta.env.DEV) (window as unknown as { rocketDebug?: unknown }).rocketDebug = { sim, state: sceneState }
+    // Inspection handle for the end-to-end tests and the browser console.
+    const w = window as unknown as { rocketDebug?: unknown }
+    w.rocketDebug = { sim, state: sceneState }
+    return () => {
+      delete w.rocketDebug
+    }
   }, [sim, sceneState])
   const smokeCount = Math.round(720 * quality.particles)
 
@@ -290,7 +299,7 @@ export function RocketScene({ sim, controls, labels }: RocketSceneProps) {
     const rocketAlt = sim.live.value.altitude
     groundState.glow = s.throttle * 2.2 * Math.exp(-rocketAlt / 350)
     groundState.glowHeight = rocketAlt
-    groundState.ambient = 0.55 + 0.6 * s.rocketSky
+    groundState.ambient = 0.35 + 0.4 * s.rocketSky
   })
 
   return (

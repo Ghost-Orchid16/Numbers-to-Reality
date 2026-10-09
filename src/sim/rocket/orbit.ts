@@ -21,7 +21,7 @@ export interface OrbitalElements {
   semiLatusRectum: number
   /** Periapsis radius r_p = p/(1 + e). */
   periapsis: number
-  /** Apoapsis radius r_a = p/(1 − e); Infinity when unbound. */
+  /** Apoapsis radius r_a = a(1 + e); Infinity when unbound. */
   apoapsis: number
   /** Orbital period 2π√(a³/μ); NaN when unbound. */
   period: number
@@ -47,8 +47,11 @@ export function orbitalElements(x: number, y: number, vx: number, vy: number, mu
   const p = (h * h) / mu
   const periapsis = p / (1 + e)
   const bound = energy < 0
-  const apoapsis = bound && e < 1 ? p / (1 - e) : Infinity
   const semiMajorAxis = -mu / (2 * energy)
+  // a(1 + e) rather than p/(1 − e): for near-vertical flight the orbit is a
+  // needle-thin ellipse with e → 1 and p → 0, where p/(1 − e) is 0/0. (Purely
+  // vertical motion is the limit e = 1 of a bound orbit, apoapsis 2a.)
+  const apoapsis = bound ? semiMajorAxis * (1 + Math.min(e, 1)) : Infinity
   const period = bound ? 2 * Math.PI * Math.sqrt(semiMajorAxis ** 3 / mu) : Number.NaN
   // For a near-circular orbit the periapsis direction is undefined; use the position angle.
   const argumentOfPeriapsis = e > 1e-9 ? Math.atan2(ey, ex) : Math.atan2(y, x)
