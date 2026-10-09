@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { EquationBlock } from '../../components/math/EquationBlock'
 import { Eq, Fn, Frac, Live, N, Op, Paren, Sqrt, Unit, V } from '../../components/math/Math'
 import { NarrativeBlock } from '../../components/scroll/NarrativeBlock'
+import { Term } from '../../components/ui/Term'
 import { ToggleControl, VariableControl } from '../../components/ui/VariableControl'
 import { useStore } from '../../hooks/useStore'
 import { formatDuration, formatMissionTime, formatNumber, formatScientific } from '../../sim/core/format'
@@ -14,6 +15,8 @@ import { PLANET_RADIUS, referenceArea, VEHICLE } from '../../sim/rocket/vehicle'
 import { fmt } from './liveFormat'
 
 const spec = (key: keyof RocketParams) => ROCKET_PARAM_SPECS.find((s) => s.key === key)!
+
+const MAX_Q_DEFINITION = 'Maximum dynamic pressure: the moment in the climb when the oncoming air presses hardest on the rocket, q = ½ρv². Speed is still rising but the air is already thinning.'
 
 /** An inline control for one model variable, bound to the simulation. */
 export function ParamControl({ sim, name, aside, compact }: { sim: RocketSimulation; name: keyof RocketParams; aside?: ReactNode; compact?: boolean }) {
@@ -184,7 +187,11 @@ export function DragBeat({ sim, active }: BeatProps) {
     <NarrativeBlock
       active={active}
       kicker="Through the atmosphere"
-      title="The air pushes back hardest at Max-Q."
+      title={
+        <>
+          The air pushes back hardest at <Term definition={MAX_Q_DEFINITION}>Max-Q</Term>.
+        </>
+      }
       realWorld="A real drag coefficient changes sharply near the speed of sound, and rockets throttle down through Max-Q to keep the structure within its limits."
     >
       <p className="detail">
@@ -304,7 +311,7 @@ export function TurnBeat({ sim, active }: BeatProps) {
       <TryIt>
         <ParamControl sim={sim} name="pitchKick" />
       </TryIt>
-      <Watch>The dashed cyan curve is the orbit the rocket would follow if the engines stopped now. For now it plunges through the planet.</Watch>
+      <Watch>The blue curve is the orbit the rocket would follow if the engines stopped now. For now it plunges through the planet — the dashed part is underground.</Watch>
     </NarrativeBlock>
   )
 }

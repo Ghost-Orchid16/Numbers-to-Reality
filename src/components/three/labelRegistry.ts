@@ -16,16 +16,24 @@ export interface LabelTarget {
  */
 export class LabelRegistry {
   private readonly elements = new Map<string, HTMLElement>()
+  private readonly refs = new Map<string, (el: HTMLElement | null) => void>()
   private readonly targets = new Map<string, LabelTarget>()
   private readonly projected = new Vector3()
   private readonly lastStyle = new Map<string, string>()
 
-  /** Ref callback for a label element. */
-  ref(id: string) {
-    return (el: HTMLElement | null) => {
-      if (el) this.elements.set(id, el)
-      else this.elements.delete(id)
+  /** Ref callback for a label element (stable per id, so re-renders don't re-attach). */
+  ref(id: string): (el: HTMLElement | null) => void {
+    let ref = this.refs.get(id)
+    if (!ref) {
+      ref = (el) => {
+        if (el) this.elements.set(id, el)
+        else this.elements.delete(id)
+        // A re-attached element starts unstyled; forget what was last written.
+        this.lastStyle.delete(id)
+      }
+      this.refs.set(id, ref)
     }
+    return ref
   }
 
   /** The mutable target for a label (created on first use). */

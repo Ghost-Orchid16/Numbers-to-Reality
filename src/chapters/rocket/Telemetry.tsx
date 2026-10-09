@@ -1,6 +1,8 @@
+import { DataCell, DataGroup, DataPanel, DataStrip } from '../../components/ui/DataPanel'
 import { LiveMetric } from '../../components/ui/LiveMetric'
 import { LiveText } from '../../components/ui/LiveText'
-import { formatAcceleration, formatDistance, formatForce, formatMass, formatMissionTime, formatNumber, formatPressure, formatSpeed, type Formatted } from '../../sim/core/format'
+import { Term } from '../../components/ui/Term'
+import { formatAcceleration, formatDistance, formatForce, formatMass, formatMissionTime, formatNumber, formatPressure, formatSpeed, toText, type Formatted } from '../../sim/core/format'
 import type { RocketSimulation } from '../../sim/rocket/RocketSimulation'
 import { PLANET_RADIUS } from '../../sim/rocket/vehicle'
 import { phaseLabel } from './phase'
@@ -18,34 +20,28 @@ export function Telemetry({ sim, compact }: { sim: RocketSimulation; compact?: b
 
   if (compact) {
     return (
-      <div className="grid grid-cols-3 gap-x-3 rounded-lg border border-line bg-void/80 px-3 py-2 text-xs">
-        <div>
-          <p className="text-2xs text-muted">Time</p>
-          <LiveText channel={ch} format={(s) => formatMissionTime(s.t)} className="tabular text-sm text-fg" />
-        </div>
-        <div>
-          <p className="text-2xs text-muted">Altitude</p>
-          <LiveText channel={ch} format={(s) => { const f = formatDistance(s.altitude); return `${f.value} ${f.unit}` }} className="tabular text-sm text-fg" />
-        </div>
-        <div>
-          <p className="text-2xs text-muted">Speed</p>
-          <LiveText channel={ch} format={(s) => { const f = formatSpeed(s.speed); return `${f.value} ${f.unit}` }} className="tabular text-sm text-fg" />
-        </div>
-      </div>
+      <DataStrip label="Live telemetry">
+        <DataCell label="Time">
+          <LiveText channel={ch} format={(s) => formatMissionTime(s.t)} />
+        </DataCell>
+        <DataCell label="Altitude">
+          <LiveText channel={ch} format={(s) => toText(formatDistance(s.altitude))} />
+        </DataCell>
+        <DataCell label="Speed">
+          <LiveText channel={ch} format={(s) => toText(formatSpeed(s.speed))} />
+        </DataCell>
+      </DataStrip>
     )
   }
 
   return (
-    <section aria-label="Live telemetry" className="w-full">
-      <header className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
-        <p className="flex items-center gap-2 text-xs text-muted">
-          <span aria-hidden className="size-1.5 rounded-full bg-ok" />
-          Live simulation
-        </p>
-        <LiveText channel={ch} format={(s) => formatMissionTime(s.t)} className="tabular text-lg leading-none text-fg" />
-      </header>
+    <DataPanel
+      label="Live telemetry"
+      status="Live simulation"
+      headline={<LiveText channel={ch} format={(s) => formatMissionTime(s.t)} className="tabular text-lg leading-none text-fg" />}
+    >
       <LiveText channel={ch} format={(s) => phaseLabel(s, orbitReached())} className="mt-2 block text-xs text-fg/80" />
-      <dl className="mt-2">
+      <DataGroup>
         <LiveMetric label="Altitude" channel={ch} quantity="position" format={(s) => formatDistance(s.altitude)} primary />
         <LiveMetric
           label="Speed"
@@ -66,15 +62,16 @@ export function Telemetry({ sim, compact }: { sim: RocketSimulation; compact?: b
         <LiveMetric label="Thrust" channel={ch} quantity="force" format={(s) => formatForce(s.thrust)} />
         <LiveMetric label="Weight" channel={ch} quantity="gravity" format={(s) => formatForce(s.weight)} />
         <LiveMetric label="Drag" channel={ch} quantity="drag" format={(s) => formatForce(s.drag)} />
-        <LiveMetric label="Dynamic pressure" channel={ch} format={(s) => formatPressure(s.dynamicPressure)} />
-      </dl>
-      <div className="mt-3 border-t border-line pt-2">
-        <p className="text-2xs text-muted">If the engines stopped now (gravity only)</p>
-        <dl>
-          <LiveMetric label="Lowest point" channel={ch} format={(s) => (s.onPad ? { value: '—', unit: '' } : orbitAltitude(s.orbit.periapsis))} />
-          <LiveMetric label="Highest point" channel={ch} format={(s) => (s.onPad ? { value: '—', unit: '' } : orbitAltitude(s.orbit.apoapsis))} />
-        </dl>
-      </div>
-    </section>
+        <LiveMetric
+          label={<Term definition="The pressure of the oncoming air, q = ½ρv². Drag and the aerodynamic load on the structure both scale with it.">Dynamic pressure</Term>}
+          channel={ch}
+          format={(s) => formatPressure(s.dynamicPressure)}
+        />
+      </DataGroup>
+      <DataGroup divided caption="If the engines stopped now (gravity only)">
+        <LiveMetric label="Lowest point" channel={ch} format={(s) => (s.onPad ? { value: '—', unit: '' } : orbitAltitude(s.orbit.periapsis))} />
+        <LiveMetric label="Highest point" channel={ch} format={(s) => (s.onPad ? { value: '—', unit: '' } : orbitAltitude(s.orbit.apoapsis))} />
+      </DataGroup>
+    </DataPanel>
   )
 }

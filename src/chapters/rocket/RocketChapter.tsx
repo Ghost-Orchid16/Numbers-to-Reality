@@ -3,6 +3,7 @@ import { NarrativeBlock } from '../../components/scroll/NarrativeBlock'
 import { ScrollStage, type ScrollStep } from '../../components/scroll/ScrollStage'
 import { SimulationCanvas } from '../../components/three/SimulationCanvas'
 import { ChapterTitle } from '../../components/ui/ChapterTitle'
+import { SimulationLegend } from '../../components/ui/SimulationLegend'
 import { useIsDesktop, usePrefersReducedMotion } from '../../hooks/useMediaQuery'
 import { useInViewport, useNearViewport } from '../../hooks/useViewport'
 import { RocketSimulation } from '../../sim/rocket/RocketSimulation'
@@ -14,6 +15,7 @@ import { CountdownBeat, DragBeat, LiftoffBeat, MassBeat, OrbitBeat, TurnBeat } f
 import { FlightProfile } from './FlightProfile'
 import { LabControls } from './Lab'
 import { LAB_SHOTS, type LabView } from './labShots'
+import { legendFor } from './legend'
 import { ModelNotes } from './ModelNotes'
 import { Telemetry } from './Telemetry'
 import { BEATS, beatAt, type BeatId } from './timeline'
@@ -76,6 +78,7 @@ export default function RocketChapter() {
   }, [sim, labView, beat])
 
   const inLab = beat === 'lab'
+  const legend = useMemo(() => legendFor(beat), [beat])
 
   const stage = (
     <>
@@ -98,6 +101,11 @@ export default function RocketChapter() {
       {/* Legibility scrims behind the narrative: left column on desktop, bottom on mobile. */}
       <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 hidden w-[50%] bg-gradient-to-r from-void/90 via-void/55 to-transparent lg:block" />
       <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-void/85 to-transparent lg:hidden" />
+
+      {/* Key to the scene's lines, in the clear band above the narrative and instruments. */}
+      <div className="pointer-events-none absolute inset-x-0 top-5 hidden justify-center lg:flex">
+        <SimulationLegend items={legend} label="What the lines show" />
+      </div>
 
       {/* Instrument column. */}
       <aside className="absolute right-4 top-16 hidden w-[17.5rem] space-y-5 rounded-lg border border-line bg-void/80 p-4 lg:block xl:right-6 xl:w-[19rem]">

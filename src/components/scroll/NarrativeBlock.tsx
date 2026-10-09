@@ -3,7 +3,7 @@ import { useState, type ReactNode } from 'react'
 interface NarrativeBlockProps {
   /** Short context line: when or where in the story this is. */
   kicker: ReactNode
-  title: string
+  title: ReactNode
   children: ReactNode
   /** Level 3: how the real system is more complicated. */
   realWorld?: ReactNode
